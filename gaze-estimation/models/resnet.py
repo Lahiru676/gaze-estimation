@@ -1,8 +1,14 @@
 import torch
 from torch import nn, Tensor
-from torchvision.models import ResNet18_Weights, ResNet34_Weights, ResNet50_Weights
+from torch.hub import load_state_dict_from_url
 
-from typing import Any, Callable, List, Optional, Type, Tuple
+from typing import Any, Callable, List, Optional, Type, Tuple, Union
+
+model_urls = {
+    "resnet18": "https://download.pytorch.org/models/resnet18-f37072fd.pth",
+    "resnet34": "https://download.pytorch.org/models/resnet34-b627a593.pth",
+    "resnet50": "https://download.pytorch.org/models/resnet50-0676ba61.pth",
+}
 
 
 __all__ = ["resnet18", "resnet34", "resnet50"]
@@ -137,7 +143,7 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
     def __init__(
         self,
-        block: Type[BasicBlock | Bottleneck],
+        block: Type[Union[BasicBlock, Bottleneck]],
         layers: List[int],
         num_classes: int = 1000,
         groups: int = 1,
@@ -188,7 +194,7 @@ class ResNet(nn.Module):
 
     def _make_layer(
         self,
-        block: Type[BasicBlock | Bottleneck],
+        block: Type[Union[BasicBlock, Bottleneck]],
         planes: int,
         blocks: int,
         stride: int = 1,
@@ -270,41 +276,29 @@ def load_filtered_state_dict(model, state_dict):
 
 
 def _resnet(
-    block: Type[BasicBlock],
+    arch: str,
+    block: Type[Union[BasicBlock, Bottleneck]],
     layers: List[int],
-    weights: Optional[ResNet34_Weights],
+    pretrained: bool,
     progress: bool,
     **kwargs: Any,
 ) -> ResNet:
     model = ResNet(block, layers, **kwargs)
 
-    if weights is not None:
-        state_dict = weights.get_state_dict(progress=progress, check_hash=True)
+    if pretrained:
+        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
         load_filtered_state_dict(model, state_dict)
 
     return model
 
 
 def resnet18(*, pretrained: bool = True, progress: bool = True, **kwargs: Any) -> ResNet:
-    if pretrained:
-        weights = ResNet18_Weights.DEFAULT
-    else:
-        weights = None
-    return _resnet(BasicBlock, [2, 2, 2, 2], weights, progress, **kwargs)
+    return _resnet("resnet18", BasicBlock, [2, 2, 2, 2], pretrained, progress, **kwargs)
 
 
 def resnet34(*, pretrained: bool = True, progress: bool = True, **kwargs: Any) -> ResNet:
-    if pretrained:
-        weights = ResNet34_Weights.DEFAULT
-    else:
-        weights = None
-    return _resnet(BasicBlock, [3, 4, 6, 3], weights, progress, **kwargs)
+    return _resnet("resnet34", BasicBlock, [3, 4, 6, 3], pretrained, progress, **kwargs)
 
 
 def resnet50(*, pretrained: bool = True, progress: bool = True, **kwargs: Any) -> ResNet:
-    if pretrained:
-        weights = ResNet50_Weights.DEFAULT
-    else:
-        weights = None
-
-    return _resnet(Bottleneck, [3, 4, 6, 3], weights, progress, **kwargs)
+    return _resnet("resnet50", Bottleneck, [3, 4, 6, 3], pretrained, progress, **kwargs)
