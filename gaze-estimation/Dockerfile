@@ -20,7 +20,8 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 # Install Python dependencies
 RUN pip3 install pillow tqdm
-RUN git clone https://github.com/yakhyo/uniface.git /opt/uniface
+RUN git clone https://github.com/yakhyo/uniface.git /opt/uniface && \
+    find /opt/uniface -name "*.py" -exec sed -i '/from __future__ import annotations/d' {} \;
 ENV PYTHONPATH="/opt/uniface:${PYTHONPATH}"
 RUN pip3 install onnxruntime
 
