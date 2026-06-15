@@ -10,6 +10,7 @@ RUN grep -rl "kitware" /etc/apt/ | xargs sed -i '/kitware/d' 2>/dev/null || true
 RUN apt-get -o Acquire::AllowInsecureRepositories=true update && \
     apt-get install -y --no-install-recommends --allow-unauthenticated \
     python3-opencv \
+    libopencv-data \
     libjpeg-dev \
     zlib1g-dev \
     libfreetype6-dev \
@@ -20,9 +21,6 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 # Install Python dependencies
 RUN pip3 install pillow tqdm
-RUN git clone https://github.com/yakhyo/uniface.git /opt/uniface && \
-    find /opt/uniface -name "*.py" -exec sed -i '/from __future__ import annotations/d' {} \;
-ENV PYTHONPATH="/opt/uniface:${PYTHONPATH}"
 RUN pip3 install onnxruntime
 
 # Copy project files

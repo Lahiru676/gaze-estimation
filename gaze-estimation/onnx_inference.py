@@ -4,7 +4,6 @@
 
 import cv2
 import time
-from uniface import RetinaFace
 import argparse
 import numpy as np
 import onnxruntime as ort
@@ -106,6 +105,20 @@ def parse_args():
     parser.add_argument("--model", type=str, required=True, help="Path to ONNX model")
     parser.add_argument("--output", type=str, default=None, help="Path to save output video (optional)")
     return parser.parse_args()
+
+
+class RetinaFace:
+    def __init__(self):
+        xml = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
+        self._det = cv2.CascadeClassifier(xml)
+
+    def detect(self, frame):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        dets = self._det.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        faces = []
+        for (x, y, w, h) in dets:
+            faces.append(type("Face", (), {"bbox": [x, y, x + w, y + h, 1.0]})())
+        return faces
 
 
 if __name__ == "__main__":

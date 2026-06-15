@@ -12,7 +12,18 @@ from torchvision import transforms
 from config import data_config
 from utils.helpers import get_model, draw_bbox_gaze
 
-from uniface import RetinaFace
+class RetinaFace:
+    def __init__(self):
+        xml = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
+        self._det = cv2.CascadeClassifier(xml)
+
+    def detect(self, frame):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        dets = self._det.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        faces = []
+        for (x, y, w, h) in dets:
+            faces.append(type("Face", (), {"bbox": [x, y, x + w, y + h, 1.0]})())
+        return faces
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
