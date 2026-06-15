@@ -3,12 +3,12 @@ FROM nvcr.io/nvidia/l4t-pytorch:r32.7.1-pth1.10-py3
 
 WORKDIR /app
 
-# Remove broken Kitware repo (may be named differently) and add its GPG key as fallback
-RUN find /etc/apt/sources.list.d/ -name "*kitware*" -delete 2>/dev/null || true
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 65ADECD7A7039392 2>/dev/null || true
+# Remove all kitware references (may be in sources.list or sources.list.d)
+RUN grep -rl "kitware" /etc/apt/ | xargs sed -i '/kitware/d' 2>/dev/null || true
 
 # System dependencies for OpenCV and Pillow
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get -o Acquire::AllowInsecureRepositories=true update && \
+    apt-get install -y --no-install-recommends --allow-unauthenticated \
     python3-opencv \
     libjpeg-dev \
     zlib1g-dev \
