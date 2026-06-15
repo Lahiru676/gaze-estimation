@@ -20,7 +20,10 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 # Install Python dependencies
 RUN pip3 install pillow tqdm
-RUN pip3 install git+https://github.com/yakhyo/uniface.git
+RUN git clone https://github.com/yakhyo/uniface.git /tmp/uniface && \
+    sed -i 's/setuptools>=64/setuptools>=40/' /tmp/uniface/pyproject.toml && \
+    pip3 install /tmp/uniface && \
+    rm -rf /tmp/uniface
 RUN pip3 install onnxruntime
 
 # Copy project files
