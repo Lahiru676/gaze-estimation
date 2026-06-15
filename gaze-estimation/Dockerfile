@@ -1,0 +1,25 @@
+# NVIDIA L4T PyTorch base — JetPack 4.6.1, PyTorch 1.10, Python 3.6
+FROM nvcr.io/nvidia/l4t-pytorch:r32.7.1-pth1.10-py3
+
+WORKDIR /app
+
+# System dependencies for OpenCV and Pillow
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-opencv \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip so it can handle pyproject.toml-based packages
+RUN pip3 install --upgrade pip setuptools wheel
+
+# Install Python dependencies
+RUN pip3 install pillow tqdm
+RUN pip3 install git+https://github.com/yakhyo/uniface.git
+RUN pip3 install onnxruntime
+
+# Copy project files
+COPY . /app/
+
+CMD ["python3", "inference.py", "--model", "resnet18", "--weight", "weights/resnet18.pt", "--source", "0"]
