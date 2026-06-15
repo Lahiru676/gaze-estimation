@@ -3,6 +3,9 @@ FROM nvcr.io/nvidia/l4t-pytorch:r32.7.1-pth1.10-py3
 
 WORKDIR /app
 
+# Remove broken Kitware repo from base image before updating
+RUN rm -f /etc/apt/sources.list.d/kitware.list
+
 # System dependencies for OpenCV and Pillow
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-opencv \
