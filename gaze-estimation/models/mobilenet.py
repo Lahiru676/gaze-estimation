@@ -1,8 +1,10 @@
 import torch
 from torch import nn, Tensor
-from torchvision.models import MobileNet_V2_Weights
+from torch.hub import load_state_dict_from_url
 
 from typing import Any, Callable, List, Optional
+
+_MOBILENET_V2_URL = "https://download.pytorch.org/models/mobilenet_v2-b0353104.pth"
 
 __all__ = ["mobilenet_v2"]
 
@@ -214,15 +216,10 @@ def load_filtered_state_dict(model, state_dict):
 
 
 def mobilenet_v2(*, pretrained: bool = True, progress: bool = True, **kwargs: Any) -> MobileNetV2:
-    if pretrained:
-        weights = MobileNet_V2_Weights.IMAGENET1K_V1
-    else:
-        weights = None
-
     model = MobileNetV2(**kwargs)
 
-    if weights is not None:
-        state_dict = weights.get_state_dict(progress=progress, check_hash=True)
+    if pretrained:
+        state_dict = load_state_dict_from_url(_MOBILENET_V2_URL, progress=progress)
         load_filtered_state_dict(model, state_dict)
 
     return model
