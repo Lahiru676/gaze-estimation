@@ -174,9 +174,12 @@ def main(params):
                 out.write(frame)
 
             if params.view:
-                cv2.imshow("Demo", frame)
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    break
+                try:
+                    cv2.imshow("Demo", frame)
+                    if cv2.waitKey(1) & 0xFF == ord("q"):
+                        break
+                except Exception:
+                    params.view = False
 
     cap.release()
     if params.output:
