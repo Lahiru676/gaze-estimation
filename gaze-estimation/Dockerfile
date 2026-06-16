@@ -15,6 +15,10 @@ RUN apt-get -o Acquire::AllowInsecureRepositories=true update && \
     libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Download Haar cascade for face detection
+RUN wget -q https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml \
+    -O /haarcascade_frontalface_default.xml
+
 # Upgrade pip so it can handle pyproject.toml-based packages
 RUN pip3 install --upgrade pip setuptools wheel
 

@@ -14,7 +14,7 @@ from utils.helpers import get_model, draw_bbox_gaze
 
 class RetinaFace:
     def __init__(self):
-        xml = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
+        xml = "/haarcascade_frontalface_default.xml"
         self._det = cv2.CascadeClassifier(xml)
 
     def detect(self, frame):
