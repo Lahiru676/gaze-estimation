@@ -10,7 +10,6 @@ RUN grep -rl "kitware" /etc/apt/ | xargs sed -i '/kitware/d' 2>/dev/null || true
 RUN apt-get -o Acquire::AllowInsecureRepositories=true update && \
     apt-get install -y --no-install-recommends --allow-unauthenticated \
     python3-opencv \
-    libopencv-data \
     libjpeg-dev \
     zlib1g-dev \
     libfreetype6-dev \
