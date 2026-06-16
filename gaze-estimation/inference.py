@@ -116,8 +116,11 @@ def main(params):
     if params.output:
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fourcc = cv2.VideoWriter_fourcc(*"XVID")
-        out = cv2.VideoWriter(params.output, fourcc, cap.get(cv2.CAP_PROP_FPS), (width, height))
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+        out = cv2.VideoWriter(params.output, fourcc, fps, (width, height))
+        if not out.isOpened():
+            raise IOError(f"VideoWriter failed to open: {params.output}")
 
     if not cap.isOpened():
         raise IOError("Cannot open webcam")
