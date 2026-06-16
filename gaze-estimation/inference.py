@@ -41,7 +41,7 @@ def parse_args():
     parser.add_argument(
         "--view",
         action="store_true",
-        default=True,
+        default=False,
         help="Display the inference results",
     )
     parser.add_argument(
