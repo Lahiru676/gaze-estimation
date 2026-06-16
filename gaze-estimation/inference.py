@@ -126,7 +126,7 @@ def main(params):
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         ext = params.output.rsplit(".", 1)[-1].lower()
-        fourcc = cv2.VideoWriter_fourcc(*("MJPG" if ext == "avi" else "mp4v"))
+        fourcc = cv2.VideoWriter_fourcc(*("XVID" if ext == "avi" else "mp4v"))
         out = cv2.VideoWriter(params.output, fourcc, fps, (width, height))
         if not out.isOpened():
             raise IOError(f"VideoWriter failed to open: {params.output}")

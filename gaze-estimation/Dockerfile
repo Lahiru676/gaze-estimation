@@ -6,9 +6,12 @@ WORKDIR /app
 # Remove all kitware references (may be in sources.list or sources.list.d)
 RUN grep -rl "kitware" /etc/apt/ | xargs sed -i '/kitware/d' 2>/dev/null || true
 
-# System dependencies for Pillow (base image already has OpenCV 4.1.1)
+# System dependencies
 RUN apt-get -o Acquire::AllowInsecureRepositories=true update && \
     apt-get install -y --no-install-recommends --allow-unauthenticated \
+    python3-opencv \
+    ffmpeg \
+    libxvidcore4 \
     libjpeg-dev \
     zlib1g-dev \
     libfreetype6-dev \
