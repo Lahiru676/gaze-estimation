@@ -97,6 +97,7 @@ def pre_process(image):
 
 def main(params):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logging.info(f"Running on: {device}")
 
     idx_tensor = torch.arange(params.bins, device=device, dtype=torch.float32)
 
