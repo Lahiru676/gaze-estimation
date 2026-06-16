@@ -14,7 +14,13 @@ from utils.helpers import get_model, draw_bbox_gaze
 
 class RetinaFace:
     def __init__(self):
-        xml = "/haarcascade_frontalface_default.xml"
+        import os
+        candidates = [
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml",
+            "/haarcascade_frontalface_default.xml",
+            "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml",
+        ]
+        xml = next((p for p in candidates if os.path.exists(p)), candidates[0])
         self._det = cv2.CascadeClassifier(xml)
 
     def detect(self, frame):
@@ -117,7 +123,8 @@ def main(params):
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-        fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+        ext = params.output.rsplit(".", 1)[-1].lower()
+        fourcc = cv2.VideoWriter_fourcc(*("MJPG" if ext == "avi" else "mp4v"))
         out = cv2.VideoWriter(params.output, fourcc, fps, (width, height))
         if not out.isOpened():
             raise IOError(f"VideoWriter failed to open: {params.output}")
