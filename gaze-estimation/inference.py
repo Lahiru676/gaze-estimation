@@ -15,8 +15,10 @@ from utils.helpers import get_model, draw_bbox_gaze
 class RetinaFace:
     def __init__(self):
         import os
+        cv2_data = getattr(cv2, "data", None)
+        cv2_cascade_dir = getattr(cv2_data, "haarcascades", "") if cv2_data else ""
         candidates = [
-            cv2.data.haarcascades + "haarcascade_frontalface_default.xml",
+            cv2_cascade_dir + "haarcascade_frontalface_default.xml",
             "/haarcascade_frontalface_default.xml",
             "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml",
         ]
