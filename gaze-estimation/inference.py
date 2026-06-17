@@ -3,6 +3,7 @@ import time
 import logging
 import argparse
 import warnings
+import subprocess
 import numpy as np
 
 import torch
@@ -122,15 +123,17 @@ def main(params):
     else:
         cap = cv2.VideoCapture(video_source)
 
+    out = None
     if params.output:
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-        ext = params.output.rsplit(".", 1)[-1].lower()
-        fourcc = cv2.VideoWriter_fourcc(*("XVID" if ext == "avi" else "mp4v"))
-        out = cv2.VideoWriter(params.output, fourcc, fps, (width, height))
-        if not out.isOpened():
-            raise IOError(f"VideoWriter failed to open: {params.output}")
+        out = subprocess.Popen(
+            ["ffmpeg", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24",
+             "-s", f"{width}x{height}", "-r", str(fps), "-i", "pipe:0",
+             "-vcodec", "mpeg4", "-q:v", "5", params.output],
+            stdin=subprocess.PIPE, stderr=subprocess.DEVNULL
+        )
 
     if not cap.isOpened():
         raise IOError("Cannot open webcam")
@@ -181,7 +184,7 @@ def main(params):
             cv2.putText(frame, f"FPS: {fps:.1f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             if params.output:
-                out.write(frame)
+                out.stdin.write(frame.tobytes())
 
             if params.view:
                 try:
@@ -193,7 +196,8 @@ def main(params):
 
     cap.release()
     if params.output:
-        out.release()
+        out.stdin.close()
+        out.wait()
     cv2.destroyAllWindows()
 
 
